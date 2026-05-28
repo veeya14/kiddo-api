@@ -22,3 +22,5 @@ $routes->get('/api/greeting-quiz', 'ApiController::greetingQuiz');
 $routes->get('/api/colour-quiz', 'ApiController::colourQuiz');
 
 $routes->post('api/create-user', 'ApiController::createUser');
+$routes->post('/api/save-quiz-result', 'ApiController::saveQuizResult');
+$routes->post('api/unlock-reward', 'ApiController::unlockReward');

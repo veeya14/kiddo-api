@@ -373,5 +373,94 @@ public function createUser()
     ]);
 }
 
+public function saveQuizResult()
+{
+    $db = \Config\Database::connect();
+
+    $idQuiz = $this->request->getPost('id_quiz');
+    $idUser = $this->request->getPost('id_user');
+    $stars = $this->request->getPost('stars');
+
+    if (!$idQuiz || !$idUser || !$stars) {
+        return $this->respond([
+            'status' => false,
+            'message' => 'Data incomplete'
+        ]);
+    }
+
+    $db->table('quiz_result')->insert([
+        'id_quiz' => $idQuiz,
+        'id_user' => $idUser,
+        'stars' => $stars,
+        'date_taken' => date('Y-m-d H:i:s')
+    ]);
+
+    return $this->respond([
+        'status' => true,
+        'message' => 'Quiz result saved'
+    ]);
+}
+
+public function unlockReward()
+{
+    $db = \Config\Database::connect();
+
+    $idUser = $this->request->getPost('id_user');
+    $stars  = (int) $this->request->getPost('stars');
+
+    if (!$idUser) {
+        return $this->respond([
+            'status' => false,
+            'message' => 'User not found'
+        ]);
+    }
+
+    $rewards = $db->table('rewards')
+        ->where('required_stars <=', $stars)
+        ->get()
+        ->getResultArray();
+
+    $unlocked = [];
+
+    foreach ($rewards as $reward) {
+
+        $check = $db->table('unlocked_reward')
+            ->where('id_user', $idUser)
+            ->where('id_reward', $reward['id_reward'])
+            ->get()
+            ->getRowArray();
+
+        if (!$check) {
+
+            $db->table('unlocked_reward')->insert([
+                'id_user' => $idUser,
+                'id_reward' => $reward['id_reward'],
+                'unlocked_at' => date('Y-m-d H:i:s')
+            ]);
+
+            $unlocked[] = $reward['id_reward'];
+        }
+    }
+
+    return $this->respond([
+        'status' => true,
+        'message' => 'Reward unlocked',
+        'data' => $unlocked
+    ]);
+}
+
+public function unlockedRewards()
+{
+    $db = \Config\Database::connect();
+
+    $idUser = $this->request->getGet('id_user');
+
+    $data = $db->table('unlocked_reward')
+        ->where('id_user', $idUser)
+        ->get()
+        ->getResultArray();
+
+    return $this->respond($data);
+}
 
 }
