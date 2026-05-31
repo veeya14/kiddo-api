@@ -26,11 +26,11 @@ class Database extends Config
      */
     public array $default = [
     'DSN'          => '',
-    'hostname'     => env('MYSQLHOST'),
-    'username'     => env('MYSQLUSER'),
-    'password'     => env('MYSQLPASSWORD'),
-    'database'     => env('MYSQLDATABASE'),
-    'DBDriver'     => 'MySQLi',
+    'hostname'     => env('database.default.hostname'),
+    'username'     => env('database.default.username'),
+    'password'     => env('database.default.password'),
+    'database'     => env('database.default.database'),
+    'DBDriver'     => env('database.default.DBDriver') ?: 'MySQLi',
     'DBPrefix'     => '',
     'pConnect'     => false,
     'DBDebug'      => (ENVIRONMENT !== 'production'),
@@ -41,7 +41,7 @@ class Database extends Config
     'compress'     => false,
     'strictOn'     => false,
     'failover'     => [],
-    'port'         => (int) env('MYSQLPORT'),
+    'port'         => (int) env('database.default.port'),
     'numberNative' => false,
     'foundRows'    => false,
     'dateFormat'   => [
@@ -49,7 +49,7 @@ class Database extends Config
         'datetime' => 'Y-m-d H:i:s',
         'time'     => 'H:i:s',
     ],
-    ];
+];
 
     //    /**
     //     * Sample database connection for SQLite3.
