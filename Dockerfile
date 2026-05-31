@@ -1,26 +1,23 @@
-FROM php:8.2-apache
+FROM php:8.2-cli
 
-# Install extension yang dibutuhkan CodeIgniter
+WORKDIR /app
+
+# Install extension yang dibutuhkan CodeIgniter 4
 RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    zip \
     libicu-dev \
     libzip-dev \
-    zip \
-    unzip \
     && docker-php-ext-install intl pdo_mysql zip
 
-# Aktifkan rewrite
-RUN a2enmod rewrite
+# Copy seluruh project
+COPY . .
 
-# Copy project
-COPY . /var/www/html/
+# Permission folder writable
+RUN chmod -R 777 writable
 
-# Ubah document root ke public
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+# Railway akan memberikan PORT otomatis
+EXPOSE 8080
 
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
-    /etc/apache2/sites-available/*.conf
-
-# Permission writable
-RUN chown -R www-data:www-data /var/www/html/writable
-
-EXPOSE 80
+CMD php spark serve --host=0.0.0.0 --port=${PORT:-8080}
